@@ -1,6 +1,6 @@
 package com.androiddreams.miwokapp;
 
-public class Word {
+class Word {
     private String mMiwokWord;
     private String mEnglishWord;
     private int mSoundResourceId;
@@ -8,35 +8,36 @@ public class Word {
     //private int mImageResourceId = NO_IMAGE_PROVIDED;
     private int mImageResourceId = -1;
 
-    public Word(String englishWord, String miwokWord, int soundResourceId) {
+    Word(String englishWord, String miwokWord, int soundResourceId) {
         mMiwokWord = miwokWord;
         mEnglishWord = englishWord;
         mSoundResourceId = soundResourceId;
     }
 
-    public Word(String englishWord, String miwokWord, int imageResourceId, int soundResourceId) {
+    Word(String englishWord, String miwokWord, int imageResourceId, int soundResourceId) {
         mMiwokWord = miwokWord;
         mEnglishWord = englishWord;
         mImageResourceId = imageResourceId;
         mSoundResourceId = soundResourceId;
     }
 
-    public String getMiwokWord() {
+    String getMiwokWord() {
         return mMiwokWord;
     }
 
-    public String getEnglishWord() {
+    String getEnglishWord() {
         return mEnglishWord;
     }
 
-    public int getSoundResourceId() {
+    int getSoundResourceId() {
         return mSoundResourceId;
     }
 
-    public int getImageResourceId() {
+    int getImageResourceId() {
         return mImageResourceId;
     }
-    public boolean hasImage() {
+
+    boolean hasImage() {
         //return mImageResourceId != NO_IMAGE_PROVIDED;
         return mImageResourceId != -1;
     }

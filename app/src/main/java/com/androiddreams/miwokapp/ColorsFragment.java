@@ -18,6 +18,27 @@ public class ColorsFragment extends Fragment {
     private MediaPlayer mMediaPlayer;
     private AudioManager mAudioManager;
     private MediaPlayer.OnCompletionListener mOnCompletionListener;
+    private AudioManager.OnAudioFocusChangeListener onAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+        @Override
+        public void onAudioFocusChange(int focusChange) {
+            switch (focusChange) {
+                case AudioManager.AUDIOFOCUS_GAIN:
+                    mMediaPlayer.start();
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS:
+                    releaseMediaPlayer();
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                    mMediaPlayer.pause();
+                    mMediaPlayer.seekTo(0);
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                    mMediaPlayer.pause();
+                    mMediaPlayer.seekTo(0);
+                    break;
+            }
+        }
+    };
 
     public ColorsFragment() {
         // Required empty public constructor
@@ -56,7 +77,7 @@ public class ColorsFragment extends Fragment {
                 releaseMediaPlayer();
                 int result = mAudioManager.requestAudioFocus(onAudioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
                 if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                    mMediaPlayer  = MediaPlayer.create(view.getContext(), words.get(position).getSoundResourceId());
+                    mMediaPlayer = MediaPlayer.create(view.getContext(), words.get(position).getSoundResourceId());
                     mMediaPlayer.start();
                     mMediaPlayer.setOnCompletionListener(mOnCompletionListener);
                 }
@@ -65,28 +86,6 @@ public class ColorsFragment extends Fragment {
 
         return rootView;
     }
-
-    private AudioManager.OnAudioFocusChangeListener onAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
-        @Override
-        public void onAudioFocusChange(int focusChange) {
-            switch (focusChange) {
-                case AudioManager.AUDIOFOCUS_GAIN:
-                    mMediaPlayer.start();
-                    break;
-                case AudioManager.AUDIOFOCUS_LOSS:
-                    releaseMediaPlayer();
-                    break;
-                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                    mMediaPlayer.pause();
-                    mMediaPlayer.seekTo(0);
-                    break;
-                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                    mMediaPlayer.pause();
-                    mMediaPlayer.seekTo(0);
-                    break;
-            }
-        }
-    };
 
     private void releaseMediaPlayer() {
         if (mMediaPlayer != null) {

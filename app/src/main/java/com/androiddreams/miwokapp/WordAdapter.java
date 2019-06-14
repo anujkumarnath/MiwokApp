@@ -13,7 +13,8 @@ import java.util.ArrayList;
 
 public class WordAdapter extends ArrayAdapter {
     private int mColorResource;
-    public WordAdapter(Context context, ArrayList<Word> words, int colorResource) {
+
+    WordAdapter(Context context, ArrayList<Word> words, int colorResource) {
         super(context, 0, words);
         mColorResource = colorResource;
     }

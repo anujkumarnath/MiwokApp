@@ -37,7 +37,7 @@ public class CustomViewPagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-               return mContext.getString(R.string.category_numbers);
+                return mContext.getString(R.string.category_numbers);
             case 1:
                 return mContext.getString(R.string.category_colors);
             case 2:
