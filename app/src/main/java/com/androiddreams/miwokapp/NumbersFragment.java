@@ -2,50 +2,30 @@ package com.androiddreams.miwokapp;
 
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
 import java.util.ArrayList;
+import static android.content.Context.AUDIO_SERVICE;
 
-public class NumbersActivity extends AppCompatActivity implements AudioManager.OnAudioFocusChangeListener {
+public class NumbersFragment extends Fragment {
     private MediaPlayer mMediaPlayer;
     private AudioManager mAudioManager;
     private MediaPlayer.OnCompletionListener mOnCompletionListener;
-    private ActionBar actionBar;
 
-    @Override
-    public void onAudioFocusChange(int focusChange) {
-        switch (focusChange) {
-            case AudioManager.AUDIOFOCUS_GAIN:
-                mMediaPlayer.start();
-                break;
-            case AudioManager.AUDIOFOCUS_LOSS:
-                releaseMediaPlayer();
-                break;
-            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                mMediaPlayer.pause();
-                mMediaPlayer.seekTo(0);
-                break;
-            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                mMediaPlayer.pause();
-                mMediaPlayer.seekTo(0);
-                break;
-        }
+    public NumbersFragment() {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_words);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_words, container, false);
 
-        actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        mAudioManager = (AudioManager) this.getSystemService(AUDIO_SERVICE);
+        mAudioManager = (AudioManager) getContext().getSystemService(AUDIO_SERVICE);
         mOnCompletionListener = new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -53,7 +33,7 @@ public class NumbersActivity extends AppCompatActivity implements AudioManager.O
             }
         };
 
-        final ArrayList<Word> words = new ArrayList<Word>();
+        final ArrayList<Word> words = new ArrayList<>();
         words.add(new Word("one", "lutti", R.drawable.number_one, R.raw.number_one));
         words.add(new Word("two", "otiiko", R.drawable.number_two, R.raw.number_two));
         words.add(new Word("three", "tolookosu", R.drawable.number_three, R.raw.number_three));
@@ -65,14 +45,14 @@ public class NumbersActivity extends AppCompatActivity implements AudioManager.O
         words.add(new Word("nine", "wo’e", R.drawable.number_nine, R.raw.number_nine));
         words.add(new Word("ten", "na’aacha", R.drawable.number_ten, R.raw.number_ten));
 
-        WordAdapter adapter = new WordAdapter(this, words, R.color.category_numbers);
-        ListView listView = findViewById(R.id.listView);
+        WordAdapter adapter = new WordAdapter(getActivity(), words, R.color.category_numbers);
+        ListView listView = rootView.findViewById(R.id.listView);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 releaseMediaPlayer();
-                int result = mAudioManager.requestAudioFocus(NumbersActivity.this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+                int result = mAudioManager.requestAudioFocus(onAudioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
                 if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
                     mMediaPlayer  = MediaPlayer.create(view.getContext(), words.get(position).getSoundResourceId());
                     mMediaPlayer.start();
@@ -80,25 +60,43 @@ public class NumbersActivity extends AppCompatActivity implements AudioManager.O
                 }
             }
         });
+
+        return rootView;
     }
+
+    private AudioManager.OnAudioFocusChangeListener onAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+        @Override
+        public void onAudioFocusChange(int focusChange) {
+            switch (focusChange) {
+                case AudioManager.AUDIOFOCUS_GAIN:
+                    mMediaPlayer.start();
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS:
+                    releaseMediaPlayer();
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                    mMediaPlayer.pause();
+                    mMediaPlayer.seekTo(0);
+                    break;
+                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                    mMediaPlayer.pause();
+                    mMediaPlayer.seekTo(0);
+                    break;
+            }
+        }
+    };
 
     private void releaseMediaPlayer() {
         if (mMediaPlayer != null) {
             mMediaPlayer.release();
-            mAudioManager.abandonAudioFocus(NumbersActivity.this);
+            mAudioManager.abandonAudioFocus(onAudioFocusChangeListener);
             mMediaPlayer = null;
         }
     }
 
     @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
         releaseMediaPlayer();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        finish();
-        return super.onOptionsItemSelected(item);
     }
 }

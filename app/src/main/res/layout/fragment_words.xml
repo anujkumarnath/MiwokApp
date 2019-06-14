@@ -8,4 +8,4 @@
     tools:listitem="@layout/layout_list_item"
     android:dividerHeight="2dp"
     android:drawSelectorOnTop="true"
-    tools:context="com.androiddreams.miwokapp.NumbersActivity"/>
+    tools:context="com.androiddreams.miwokapp.NumbersFragment" />
